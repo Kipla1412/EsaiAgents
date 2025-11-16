@@ -8,9 +8,9 @@ __pycache__/
 .coverage.*
 *.pyc
 .vscode/
-txtai/src/python/txtai/.env
-txtai/src/python/txtai/model
-txtai/src/python/txtai/.env.*  
-txtai/src/python/txtai/model
-txtai/src/python/logs
-txtai/src/python/mlruns
+src/python/txtai/.env
+src/python/txtai/model
+src/python/txtai/.env.*  
+src/python/txtai/model
+src/python/logs
+src/python/mlruns
