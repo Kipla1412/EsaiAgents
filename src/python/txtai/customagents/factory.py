@@ -1,7 +1,7 @@
 from ..agent.base import Agent
 from .chatagent.chat import ConversationalAgent
-from ..mlflow.tracker import Tracker
-from ..logging.logger import get_logger
+from ..eval.tracker import Tracker
+from ..txtailogging.logger import get_logger
 from .speechtotext.stt import SpeechToText
 from .texttospeech.tts import TextToSpeechAgent
 class AgentFactory:

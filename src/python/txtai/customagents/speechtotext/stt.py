@@ -1,6 +1,6 @@
 import os
 from ..base import BaseAgent
-from ...logging.logger import get_logger
+from ...txtailogging.logger import get_logger
 from ...pipeline.audio.cloudtranscription import CloudTranscription
 import asyncio
 import numpy as np

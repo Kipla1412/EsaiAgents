@@ -1,6 +1,6 @@
 from ..base import BaseAgent
 from ...pipeline.audio.cloudtts import CloudTextToSpeech
-from ...logging.logger import get_logger
+from ...txtailogging.logger import get_logger
 import asyncio
 import os
 from mlflow.entities import SpanType

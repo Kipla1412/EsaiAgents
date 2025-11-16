@@ -1,7 +1,7 @@
 import time 
 import asyncio
-from ..logging.logger import get_logger
-from ..mlflow.tracker import Tracker
+from ..txtailogging.logger import get_logger
+from ..eval.tracker import Tracker
 import mlflow
 from .utils import stream_audio
 

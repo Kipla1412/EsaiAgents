@@ -2,7 +2,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from ...customagents.configloader import ConfigLoader
 from ...customagents.factory import AgentFactory
 from ...customagents.agentservice import AgentService
-from ...logging.logger import get_logger
+from ...txtailogging.logger import get_logger
 
 from dotenv import load_dotenv
 import os
