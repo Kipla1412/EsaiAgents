@@ -1,0 +1,66 @@
+tabular:
+  idcolumn: null
+  textcolumns: null
+  content: false
+
+llm:
+  method: litellm
+  path: openrouter/mistralai/mistral-nemo:free #openrouter/meta-llama/llama-3.3-8b-instruct:free #openrouter/alibaba/tongyi-deepresearch-30b-a3b:free #path: openrouter/x-ai/grok-4-fast:free #openrouter/alibaba/tongyi-deepresearch-30b-a3b:free
+  api_key: ${OPENROUTER_API_KEY}
+  api_base: https://openrouter.ai/api/v1
+  temperature: 0.7
+  #client: openai_client
+
+tts:
+  provider: groq
+  model: playai-tts
+  endpoint_url: https://api.groq.com/openai/v1
+  api_key: ${GROQ_API_KEY}
+  voice: Arista-PlayAI
+  target_rate: 22050
+
+stt:
+  provider: huggingface         
+  model: openai/whisper-large-v3    
+  endpoint_url: https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3
+  api_key: ${Hug_API_KEY} 
+  chunk: 10
+  target_rate: 16000
+ 
+agent:
+  medical_assistant:
+    description: A friendly and knowledgeable medical assistant that helps users with general medical queries, appointments, and health support.
+    max_iterations: 3
+    method: code
+  math_agent:
+    description: Does basic arithmetic
+    max_iterations: 5
+    method: tool
+  
+    tools:
+      - name: add_numbers
+        description: Add two numbers together
+        target: txtai.agent.check.numbers.add_numbers
+
+      - name: multiply
+        description: Multiply two numbers
+        target: txtai.agent.check.numbers.multiply
+
+  weather_agent:
+    description: Answers weather questions
+    max_iterations: 5
+    method: tool
+    tools:
+      - name: weather_tool
+        description: Fetch live weather for a city
+        target: txtai.agent.tool.weather.weather_tool 
+
+  default_agent:
+    max_iterations: 5
+    method: code
+    tools:
+      - python
+      - websearch
+      - webview
+
+  

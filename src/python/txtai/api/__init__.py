@@ -13,6 +13,8 @@ try:
     from .responses import *
     from .routers import *
     from .route import EncodingAPIRoute
+    from .ws import *
+
 except ImportError as missing:
     # pylint: disable=W0707
     raise ImportError('API is not available - install "api" extra to enable') from missing

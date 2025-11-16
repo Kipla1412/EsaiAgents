@@ -1,0 +1,61 @@
+tabular:
+  idcolumn: null
+  textcolumns: null
+  content: false
+
+llm:
+  method: litellm
+  path: openrouter/meta-llama/llama-3.3-8b-instruct:free
+  api_key: ${OPENROUTER_API_KEY} #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
+  api_base: https://openrouter.ai/api/v1
+  temperature: 0.7
+# llm:
+#   method: transformers
+#   path: D:\backend\txtai\src\python\txtai\model\medgemma-4b-it
+#   #quantize: true
+#   gpu: true
+
+agent:
+  math_agent:
+    description: Does basic arithmetic
+    max_iterations: 5
+    method: tool
+  
+    tools:
+      - name: add_numbers
+        description: Add two numbers together
+        target: txtai.agent.check.numbers.add_numbers
+
+      - name: multiply
+        description: Multiply two numbers
+        target: txtai.agent.check.numbers.multiply
+
+  weather_agent:
+    description: Answers weather questions
+    max_iterations: 5
+    method: tool
+    tools:
+      - name: weather_tool
+        description: Fetch live weather for a city
+        target: txtai.agent.tool.weather.weather_tool 
+
+  # medgemma_agent:
+  #   description: Answers questions using text or text+image
+  #   max_iterations: 5
+  #   method: tool
+  #   tools:
+  #     - name: medgemma_tool
+  #       description: Answer medical/general questions from text or image
+  #       target: txtai.agent.check.medgemma.medgemma_tool
+     
+
+  default_agent:
+    max_iterations: 5
+    method: code
+    tools:
+      - python
+      - websearch
+      - webview
+
+    
+

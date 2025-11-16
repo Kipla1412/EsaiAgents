@@ -8,5 +8,6 @@ try:
     from .factory import ProcessFactory
     from .model import PipelineModel
     from .tool import *
+    from .check import *
 except ImportError:
     from .placeholder import Agent

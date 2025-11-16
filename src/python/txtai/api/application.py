@@ -5,10 +5,16 @@ FastAPI application module
 import inspect
 import os
 import sys
+import mlflow
 
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi_mcp import FastApiMCP
 from httpx import AsyncClient
+
+from .ws.chat import register_chat_ws
+from .ws.s2s import register_s2s_ws
+from .ws.tts_ws import register_tts_ws
+from .ws.stt_ws import register_stt_ws
 
 from .authorization import Authorization
 from .base import API
@@ -82,21 +88,30 @@ def lifespan(application):
 
     # pylint: disable=W0603
     global INSTANCE
-
+    mlflow.autolog(log_input_examples=False, log_model_signatures=False)
     # Load YAML settings
     config = Application.read(os.environ.get("CONFIG"))
 
     # Instantiate API instance
     api = os.environ.get("API_CLASS")
     INSTANCE = APIFactory.create(config, api) if api else API(config)
-
+    
+    print("Instance created:", INSTANCE)
+    print("Application ID:", id(application))
     # Get all known routers
     routers = apirouters()
 
     # Conditionally add routes based on configuration
     for name, router in routers.items():
         if name in config:
-            application.include_router(router)
+            application.include_router(router)                ## use wschat
+
+    register_chat_ws(application)
+    register_stt_ws(application)
+    register_tts_ws(application)
+    register_s2s_ws(application)
+    
+    print("/chat ,/stt, /tts WebSocket initialized successfully")
 
     # Special case for embeddings clusters
     if "cluster" in config and "embeddings" not in config:
