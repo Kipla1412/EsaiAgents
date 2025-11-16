@@ -6,7 +6,7 @@ tabular:
 llm:
   method: litellm
   path: openrouter/meta-llama/llama-3.3-8b-instruct:free
-  api_key: ${OPENROUTER_API_KEY} #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
+  api_key: ${OPENROUTER_API_KEY} 
   api_base: https://openrouter.ai/api/v1
   temperature: 0.7
 # llm:
