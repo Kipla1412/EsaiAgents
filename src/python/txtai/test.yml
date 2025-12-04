@@ -1,0 +1,21 @@
+llm:
+  method: litellm
+  path: openrouter/meta-llama/llama-3.3-8b-instruct:free
+  api_key: ${OPENROUTER_API_KEY} 
+  api_base: https://openrouter.ai/api/v1
+  temperature: 0.7
+
+agent:
+  sqlagent:
+    description: Answers user query
+    max_iterations: 5
+    method: tool
+
+    tools:
+      - name: sql
+        description: analyze the user question and generate a sql query
+        target: txtai.customagents.phiaagent.duckdbtool.duckdb_sql_tool
+        args:
+          summary_path: "D://backend//txtai//src//python//txtai//datas/excercise.csv"
+          activities_path: "D://backend//txtai//src//python/txtai//datas//activities.csv"
+

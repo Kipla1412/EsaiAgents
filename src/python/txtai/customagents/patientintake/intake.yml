@@ -1,0 +1,17 @@
+llm:
+  method: litellm
+  path: "openrouter/alibaba/tongyi-deepresearch-30b-a3b:free"  #"openrouter/x-ai/grok-4.1-fast:free"
+  api_key: ${OPENROUTER_API_KEY}
+  api_base: https://openrouter.ai/api/v1
+  temperature: 0.0
+  messages_format: openai
+
+agent:
+  name:  patient_intake_agent
+  description: >
+    A Pre-Visit Patient Intake Agent that conducts structured,
+    empathetic medical intake interviews using OLDCARTS and
+    generates pre-visit summaries for clinicians.
+
+  max_iterations: 10
+  #method: tool

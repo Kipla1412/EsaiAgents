@@ -7,6 +7,7 @@ import os
 import sys
 import mlflow
 
+
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi_mcp import FastApiMCP
 from httpx import AsyncClient
@@ -15,7 +16,7 @@ from .ws.chat import register_chat_ws
 from .ws.s2s import register_s2s_ws
 from .ws.tts_ws import register_tts_ws
 from .ws.stt_ws import register_stt_ws
-
+from .ws.phia import register_phia_ws
 from .authorization import Authorization
 from .base import API
 from .factory import APIFactory
@@ -88,6 +89,7 @@ def lifespan(application):
 
     # pylint: disable=W0603
     global INSTANCE
+    #mlflow.smolagents.autolog(disable=True)
     mlflow.autolog(log_input_examples=False, log_model_signatures=False)
     # Load YAML settings
     config = Application.read(os.environ.get("CONFIG"))
@@ -110,6 +112,7 @@ def lifespan(application):
     register_stt_ws(application)
     register_tts_ws(application)
     register_s2s_ws(application)
+    register_phia_ws(application)
     
     print("/chat ,/stt, /tts WebSocket initialized successfully")
 

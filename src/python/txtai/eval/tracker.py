@@ -14,7 +14,7 @@ class Tracker:
         mlflow.log_param("temperature", llm_config.get("temperature"))
         mlflow.log_param("agent_description", agent_config.get("description"))
         mlflow.log_param("max_iterations", agent_config.get("max_iterations", "N/A"))
-        mlflow.log_param("prompt_templates", agent_config.get("prompt_templates"))
+        #mlflow.log_param("prompt_templates", agent_config.get("prompt_templates"))
 
     def log_turn(self, user_input, response, duration=None):
         mlflow.set_tag("latest_user_input", user_input)

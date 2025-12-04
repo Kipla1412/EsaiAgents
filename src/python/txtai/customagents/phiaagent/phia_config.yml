@@ -1,0 +1,133 @@
+# llm:
+#   method: litellm
+#   path: "openrouter/x-ai/grok-4.1-fast:free"
+#   api_key: ${OPENROUTER_API_KEY}
+#   api_base: https://openrouter.ai/api/v1
+#   temperature: 0.7
+  
+# tts:
+#   provider: groq
+#   model: playai-tts
+#   endpoint_url: https://api.groq.com/openai/v1
+#   api_key: ${GROQ_API_KEY}
+#   voice: Arista-PlayAI
+#   target_rate: 22050
+
+# stt:
+#   provider: huggingface
+#   model: openai/whisper-large-v3
+#   endpoint_url: https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3
+#   api_key: ${HUG_API_KEY}
+#   chunk: 10
+#   target_rate: 16000
+
+# agent:
+#   name: phia_reasoning_agent
+#   description: >
+#     A PHIA health reasoning agent that uses DuckDB SQL,
+#     few-shot memory search, and tool-based LLM reasoning.
+
+#   max_iterations: 10
+#   method: tool
+
+#   prompt_templates:
+#     system_prompt: |
+#       You are PHIA — a personalized health insights agent.
+      
+#       TO CALL TOOLS, respond with EXACTLY ONE JSON object and NOTHING ELSE:
+      
+#       For SQL queries:
+#       {"tool": "sql", "query": "SELECT ... FROM ..."}
+      
+#       For final answer (REQUIRED after SQL results):
+#       {"tool": "final_answer", "answer": "Your natural language response"}
+      
+#       CRITICAL RULES:
+#       - First response MUST be a SQL query
+#       - Second response MUST be a final_answer with the 'answer' parameter
+#       - NO text before or after JSON
+#       - NO explanations inside JSON  
+#       - NO markdown, no quotes around the JSON
+#       - Always use tables: summary, activities only
+#       - The 'answer' field in final_answer is REQUIRED
+      
+#       SCHEMA: {schema}
+      
+#       EXAMPLE: {fewshot_example}
+      
+#       QUESTION: {user_question}
+
+#     planning:
+#       initial_plan: |
+#         {"name": "sql", "query": "SELECT ..."} OR {"name": "memory", "query": "..."}
+#       update_plan_pre_messages: |
+#         Respond with JSON tool call only
+#       update_plan_post_messages: |
+#         Respond with JSON tool call only
+#       update_plan: |
+#         Respond with JSON tool call only
+
+#     managed_agent:
+#       task: |
+#         Execute with JSON tool calls only: {"name": "sql/memory/final_answer", ...}
+#       report: |
+#         {"name": "final_answer", "answer": "Summary of tool usage"}
+
+#     final_answer:
+#       pre_messages: |
+#         {"name": "final_answer", "answer": "Final insight:"}
+#       post_messages: |
+#         End
+
+#   tools:
+#     - name: final_answer
+#       input_schema:
+#         type: object
+#         required:
+#           - answer
+#         properties:
+#           answer:
+#             type: string
+llm:
+  method: litellm
+  path: "openrouter/x-ai/grok-4.1-fast:free"
+  api_key: ${OPENROUTER_API_KEY}
+  api_base: https://openrouter.ai/api/v1
+  temperature: 0.0
+  messages_format: openai
+
+tts:
+  provider: groq
+  model: playai-tts
+  endpoint_url: https://api.groq.com/openai/v1
+  api_key: ${GROQ_API_KEY}
+  voice: Arista-PlayAI
+  target_rate: 22050
+
+stt:
+  provider: huggingface
+  model: openai/whisper-large-v3
+  endpoint_url: https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3
+  api_key: ${HUG_API_KEY}
+  chunk: 10
+  target_rate: 16000
+
+agent:
+  name: phia_reasoning_agent
+  description: >
+    A PHIA health reasoning agent that uses DuckDB SQL,
+    few-shot memory search, and tool-based LLM reasoning.
+
+  max_iterations: 10
+  method: tool
+
+phia:
+  activities_path : D:/backend/txtai/src/python/txtai/datas/activities.csv
+  summary_path : D:/backend/txtai/src/python/txtai/datas/summary.csv
+  
+  memory:
+    name: phia_memory
+    description: "PHIA few-shot memory index"
+    path: D:/backend/txtai/src/python/fewshots_index
+    content: true
+

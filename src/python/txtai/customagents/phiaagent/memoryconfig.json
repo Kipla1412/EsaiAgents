@@ -1,0 +1,6 @@
+{
+  "name": "memory",
+  "description": "Retrieve PHIA few-shot examples",
+  "path": "D:\\backend\\txtai\\src\\python\\fewshots_index",
+  "content": true
+}
