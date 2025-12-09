@@ -11,7 +11,11 @@ from txtai.agent.tool.embeddings import EmbeddingsTool
 from .phiaagent.final_tool import FinalAnswerTool
 from .phiaagent.build_prompt import build_system_prompt
 
-from .patientintake.intakeagent import MedicalIntakeAgent
+from .patientintake.intakeagent import MedicalConversationAgent
+from .patientintake.tools.extractjson import ExtractJSONTool
+#from .patientintake.tools.askquestion import AskQuestionTool
+from .patientintake.tools.buildersummary import SummaryTool
+import importlib.resources as resources
 import os
 
 class AgentFactory:
@@ -101,16 +105,34 @@ class AgentFactory:
         
         elif agent_type == "medical_intake":
 
+            #asktool = AskQuestionTool()
+            #jsontool = ExtractJSONTool()
+            summarytool = SummaryTool()
+            finaltool = FinalAnswerTool()
+            
+            tools = [
+                {"name": "final_answer", "tool": finaltool},
+                {"name": "soap_note_generator", "tool": summarytool},
+            ]
+            #tools = [summarytool, finaltool]
+                 
             base_agent = Agent(**{
                 **agent_config,
                 "model": llm_config,
-                "tools": []
+                "tools": [t["tool"] for t in tools]
             })
-            return MedicalIntakeAgent(
-                agent_model=base_agent,
+
+            with resources.open_text("txtai.customagents.patientintake", "systemprompt.txt") as f:
+                system_prompt = f.read()
+
+            return MedicalConversationAgent(
+                base_agent=base_agent,
+                tools=tools,
+                system_prompt=system_prompt,
                 config=config,
                 tracker=tracker,
-                logger=logger
+                logger=logger,
+                 
             )
 
         raise ValueError(f"Unknown agent type: {agent_type}")
