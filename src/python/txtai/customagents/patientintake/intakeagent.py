@@ -1,89 +1,27 @@
-# import mlflow
-# from mlflow.entities import SpanType
-# from ..base import BaseAgent
-# from .tools.extractjson import ExtractJSONTool
-# from .tools.askquestion import AskQuestionTool
-# from .tools.buildersummary import SummaryTool
-# import importlib.resources as resources
-# from ..resourceloader import ConfigResourceLoader
 
-# class MedicalIntakeAgent(BaseAgent):
-
-#     def __init__(self, agent_model, config, tracker, logger, tools):
-#         super().__init__(config, tracker, logger)
-
-#         self.agent_model = agent_model
-#         self.tracker = tracker
-#         self.logger = logger
-#         #self.tools = tools
-#         # Load system prompt
-#         with resources.open_text("txtai.customagents.patientintake", "systemprompt.txt") as f:
-#             self.system_prompt = f.read()
-#         self.agent_model.process.model.tools = tools
-#         # Keep conversation history
-#         self.conversation_history = f"System: {self.system_prompt}\n"
-        
-#         self.initial_message = (
-#             "Hello! I'm your intake assistant. "
-#             "Let's start with your full name and date of birth."
-#         )
-
-#     def get_initial_message(self):
-#         return self.initial_message
-
-#     def reset(self):
-#         self.conversation_history = f"System: {self.system_prompt}\n"
-
-#     @mlflow.trace(name="generate_response", span_type=SpanType.AGENT)
-#     async def generate_response(self, user_input: str):
-
-#         try:
-#             # Add user message
-#             self.conversation_history += f"User: {user_input}\n"
-
-#             # Send to model
-#             response = self.agent_model(text=self.conversation_history)
-
-#             # Save model reply
-#             self.conversation_history += f"Agent: {response}\n"
-
-#             # Track turn
-#             self.tracker.log_turn(user_input, response)
-
-#             return response
-
-#         except Exception as e:
-#             self.logger.error(f"Error during agent response: {e}")
-#             return "Sorry, something went wrong."
-
-    
-#     # async def extract_structured_json(self):
-#     #     jsontool = self.tools[0]
-#     #     return jsontool.forward(self.conversation_history)
-
-#     async def build_previsit_summary(self):
-#         #jsontool = self.tools[0]
-#         summarytool = self.tools[0]
-
-        
-#         return summarytool.forward(self.conversation_history)
 
 import asyncio
 import mlflow
 from mlflow.entities import SpanType
 from ..base import BaseAgent
+from datetime import datetime
+
+
+from ..util import parse_soap_note, SOAPReportGenerator
 
 
 class MedicalConversationAgent(BaseAgent):
 
-    def __init__(self, base_agent, tools, system_prompt, config, tracker, logger):
+    def __init__(self, base_agent, tools, system_prompt, config, tracker, logger, patient_info):
         super().__init__(config, tracker, logger)
 
         # attach txtai Agent model
         self.agent_model = base_agent
+        self.tools = tools 
+        self.patient_info = patient_info
 
         # attach tools to model 
-        self.agent_model.process.model.tools = [t["tool"] for t in tools]
+        self.agent_model.process.model.tools = [t["tool"] for t in tools if t["name"] == "final_answer"]
 
         # inject system prompt into model
         try:
@@ -132,7 +70,14 @@ class MedicalConversationAgent(BaseAgent):
             self.logger.error(f"MedicalConversationAgent error: {e}", exc_info=True)
             return "Assistant: Sorry, something went wrong."
 
-    async def generate_summary(self):
+    async def generate_summary(self)  -> str:
+
+        """
+        SUMMARY:
+        - Called by backend when session ends (exit, timeout, disconnect, etc).
+        - Does NOT rely on LLM tool selection.
+        - Uses the internal summary tool, then asks LLM to generate SOAP Note.
+        """
         # Find the summary tool by name
         summary_tool = None
         for t in self.tools:
@@ -141,14 +86,35 @@ class MedicalConversationAgent(BaseAgent):
                 break
 
         if summary_tool is None:
+            self.logger.error("Summary tool 'soap_note_generator' not found.")
             return "No summary tool found."
-
-        # return summary_tool.forward(self.conversation_history)
-        # Step 1: Create SOAP prompt using Conversation
+        
         prompt = summary_tool.forward(self.conversation_history)
+        try:
+        # Step 2: Send prompt to LLM to generate full SOAP Note
+            summary = await asyncio.to_thread(self.agent_model, prompt)
 
-    # Step 2: Send prompt to LLM to generate full SOAP Note
-        response = await asyncio.to_thread(self.agent_model, prompt)
+            if not isinstance(summary, str):
+                summary = str(summary)
 
-        return response
+            self.tracker.log_turn("[AUTO_SUMMARY_TRIGGER]", summary)
 
+            return summary
+        except Exception as e:
+            self.logger.error(f"Error during auto summary generation: {e}", exc_info=True)
+            return "Unable to generate summary at this time."
+    
+    async def generate_pdf_report(self, pdf_path="soap_report.pdf"):
+        """
+        Full pipeline: summary → parse SOAP → generate PDF
+        """
+        soap_text = await self.generate_summary()
+
+        sections = parse_soap_note(soap_text)
+        sections["date"] = datetime.now().strftime("%d-%m-%Y")
+
+
+        pdf = SOAPReportGenerator(self.patient_info)
+        output = pdf.generate(sections, pdf_path)
+
+        return output

@@ -17,9 +17,12 @@ async def run():
             # User exit (manual)
             if msg.lower().strip() in ["exit", "quit"]:
                 print("\nConversation ended by user.\n")
-                summary = await agent.auto_generate_summary()
+                summary = await agent.generate_summary()
                 print("\n=== FINAL SOAP SUMMARY ===\n")
                 print(summary)
+
+                pdf_path = await agent.generate_pdf_report("final_report.pdf")
+                print("\nPDF saved at:", pdf_path)
                 break
 
             # Normal generation
@@ -28,15 +31,20 @@ async def run():
 
         except KeyboardInterrupt:
             print("\n\nSession interrupted.\nGenerating final summary...\n")
-            summary = await agent.auto_generate_summary()
+            summary = await agent.generate_summary()
             print(summary)
+
+            pdf_path = await agent.generate_pdf_report("final_report.pdf")
+            print("\nPDF saved:", pdf_path)
             break
 
         except Exception:
             print("\nConnection or system error.\nGenerating final summary...\n")
-            summary = await agent.auto_generate_summary()
+            summary = await agent.generate_summary()
             print(summary)
-            break
+            
+            pdf_path = await agent.generate_pdf_report("final_report.pdf")
+            print("\nPDF saved:", pdf_path)
 
 asyncio.run(run())
 

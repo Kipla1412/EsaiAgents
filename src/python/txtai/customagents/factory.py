@@ -109,17 +109,30 @@ class AgentFactory:
             #jsontool = ExtractJSONTool()
             summarytool = SummaryTool()
             finaltool = FinalAnswerTool()
-            
-            tools = [
-                {"name": "final_answer", "tool": finaltool},
-                {"name": "soap_note_generator", "tool": summarytool},
+
+            llm_tools = [
+                {"name": "final_answer", "tool": finaltool}
             ]
+
+            # Tools used only by Python (not exposed to LLM)
+            system_tools = [
+                {"name": "soap_note_generator", "tool": summarytool}
+            ]
+
+            tools = llm_tools + system_tools
+            
+            patient_info = config.get("patient_info", {})
+
+            # tools = [
+            #     {"name": "final_answer", "tool": finaltool},
+            #     {"name": "soap_note_generator", "tool": summarytool},
+            # ]
             #tools = [summarytool, finaltool]
                  
             base_agent = Agent(**{
                 **agent_config,
                 "model": llm_config,
-                "tools": [t["tool"] for t in tools]
+                "tools": [t["tool"] for t in llm_tools]
             })
 
             with resources.open_text("txtai.customagents.patientintake", "systemprompt.txt") as f:
@@ -132,6 +145,7 @@ class AgentFactory:
                 config=config,
                 tracker=tracker,
                 logger=logger,
+                patient_info=patient_info
                  
             )
 
