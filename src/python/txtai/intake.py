@@ -21,7 +21,7 @@ async def run():
                 print("\n=== FINAL SOAP SUMMARY ===\n")
                 print(summary)
 
-                pdf_path = await agent.generate_pdf_report("final_report.pdf")
+                pdf_path = await agent.generate_pdf_report("malaria_report.pdf")
                 print("\nPDF saved at:", pdf_path)
                 break
 
@@ -34,7 +34,7 @@ async def run():
             summary = await agent.generate_summary()
             print(summary)
 
-            pdf_path = await agent.generate_pdf_report("final_report.pdf")
+            pdf_path = await agent.generate_pdf_report("malaria_report.pdf")
             print("\nPDF saved:", pdf_path)
             break
 
@@ -43,7 +43,7 @@ async def run():
             summary = await agent.generate_summary()
             print(summary)
             
-            pdf_path = await agent.generate_pdf_report("final_report.pdf")
+            pdf_path = await agent.generate_pdf_report("malaria_report.pdf")
             print("\nPDF saved:", pdf_path)
 
 asyncio.run(run())

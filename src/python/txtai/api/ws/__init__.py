@@ -5,3 +5,5 @@ from .tts_ws import register_tts_ws
 from .phia import register_phia_ws
 from .helper import WebSocketResponder
 from .validator import MessageValidator
+from .previsit import register_medical_ws
+from .previstmain import *

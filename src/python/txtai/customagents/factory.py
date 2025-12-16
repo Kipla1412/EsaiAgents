@@ -13,8 +13,15 @@ from .phiaagent.build_prompt import build_system_prompt
 
 from .patientintake.intakeagent import MedicalConversationAgent
 from .patientintake.tools.extractjson import ExtractJSONTool
-#from .patientintake.tools.askquestion import AskQuestionTool
+
 from .patientintake.tools.buildersummary import SummaryTool
+
+from .patientsummaryagent import SimpleSummaryAgent
+from .summaragent.summary import SOAPNoteAgent
+from .orechestrate.orco import MedicalAgentOrchestrator
+from .orechestrate.convo import ConversationalAgent
+from .planassesmentagent import AssessmentPlanAgent
+
 import importlib.resources as resources
 import os
 
@@ -122,12 +129,6 @@ class AgentFactory:
             tools = llm_tools + system_tools
             
             patient_info = config.get("patient_info", {})
-
-            # tools = [
-            #     {"name": "final_answer", "tool": finaltool},
-            #     {"name": "soap_note_generator", "tool": summarytool},
-            # ]
-            #tools = [summarytool, finaltool]
                  
             base_agent = Agent(**{
                 **agent_config,
@@ -148,5 +149,73 @@ class AgentFactory:
                 patient_info=patient_info
                  
             )
+        elif agent_type == "simple_summary":
+
+            base_agent = Agent(**{
+                **agent_config,
+                "model": llm_config,
+                "tools": []
+            })
+
+            return SimpleSummaryAgent(
+                base_agent=base_agent,
+                config=config,
+                tracker=tracker,
+                logger=logger
+            )
+        
+        elif agent_type == "soap_note":
+
+            base_agent = Agent(**{
+                **agent_config,
+                "model": llm_config,
+                "tools": []   # SOAP agent has no tools
+            })
+
+            return SOAPNoteAgent(
+                base_agent=base_agent,
+                config=config,
+                tracker=tracker,
+                logger=logger
+            )
+
+        
+        elif agent_type == "conversation":
+            base_agent = Agent(**{
+                **agent_config,
+                "model": llm_config,
+                "tools": []
+            })
+            return ConversationalAgent(base_agent, config, tracker, logger)
+        
+        elif agent_type == "assessment_plan":
+
+            base_agent = Agent(**{
+                **agent_config,
+                "model": llm_config,
+                "tools": []
+            }) 
+
+            return AssessmentPlanAgent(
+                base_agent=base_agent,
+                config=config,
+                tracker=tracker,
+                logger=logger
+            )
+
+        elif agent_type == "medical_orchestrator":
+
+            chat_agent = AgentFactory.create_agent("conversation", config)
+            summary_agent = AgentFactory.create_agent("simple_summary", config)
+            soap_agent = AgentFactory.create_agent("soap_note", config)
+            assessment_agent =AgentFactory.create_agent("assessment_plan", config)
+
+            return MedicalAgentOrchestrator(
+                chat_agent=chat_agent,
+                summary_agent=summary_agent,
+                soap_agent=soap_agent,
+                assessment_agent= assessment_agent
+            )
+
 
         raise ValueError(f"Unknown agent type: {agent_type}")

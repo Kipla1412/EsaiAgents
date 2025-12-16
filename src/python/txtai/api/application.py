@@ -17,6 +17,8 @@ from .ws.s2s import register_s2s_ws
 from .ws.tts_ws import register_tts_ws
 from .ws.stt_ws import register_stt_ws
 from .ws.phia import register_phia_ws
+from .ws.previsit import register_medical_ws
+from .ws.previstmain import *
 from .authorization import Authorization
 from .base import API
 from .factory import APIFactory
@@ -113,7 +115,7 @@ def lifespan(application):
     register_tts_ws(application)
     register_s2s_ws(application)
     register_phia_ws(application)
-    
+    register_medical_ws(application)
     print("/chat ,/stt, /tts WebSocket initialized successfully")
 
     # Special case for embeddings clusters

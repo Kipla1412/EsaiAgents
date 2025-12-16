@@ -23,13 +23,13 @@ stt:
   target_rate: 16000
  
 agent:
-  name: conversation_agent
-  description: A friendly and knowledgeable medical assistant that helps users with general medical queries, appointments, and health support.
+  name: previsit_agent
+  description: A friendly and knowledgeable previsit medical assistant that helps users with general medical queries, appointments, and health support.
   max_iterations: 3
 
   prompt_templates:
     system_prompt: |
-      You are a friendly and knowledgeable medical assistant.
+      You are a friendly and knowledgeable previsit medical assistant.
       Your role is to provide general medical information, basic advice, appointment guidance, and patient support.
 
       IMPORTANT RULES:
@@ -98,10 +98,9 @@ agent:
           answer:
             type: string
 
+  
 patient_info:
-  name: "johnson"
-  age: 35
+  name: "umar kaladheen"
+  age: 28
   gender: "Male"
-  patient_id: "A10294"
-
-
+  patient_id: "A22456"

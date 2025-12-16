@@ -3,6 +3,9 @@ from .texttospeech import *
 from .speechtotext import *
 from .phiaagent import *
 from .patientintake import *
+from .patientsummaryagent import *
+from .summaragent import *
+from .planassesmentagent import *
 from .agentservice import AgentService
 from .base import BaseAgent
 from .utils import stream_audio

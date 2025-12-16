@@ -1,6 +1,6 @@
 llm:
   method: litellm
-  path: openrouter/tngtech/deepseek-r1t-chimera:free #openrouter/nousresearch/hermes-3-llama-3.1-405b:free
+  path: openrouter/nousresearch/hermes-3-llama-3.1-405b:free #openrouter/tngtech/deepseek-r1t-chimera:free #openrouter/openai/gpt-oss-20b:free #openrouter/nousresearch/hermes-3-llama-3.1-405b:free
   #"openrouter/google/gemini-2.0-flash-exp:free" #openrouter/google/gemini-2.0-flash-exp:free #"opentouter/google/gemini-2.0-flash-exp:free" #openrouter/nousresearch/hermes-3-llama-3.1-405b:free #  #"openrouter/x-ai/grok-4.1-fast:free" #"openrouter/alibaba/tongyi-deepresearch-30b-a3b:free" 
   api_key: ${OPENROUTER_API_KEY} #qwen/qwen3-coder:free
   api_base: "https://openrouter.ai/api/v1" #https://api.groq.com/openai/v1 

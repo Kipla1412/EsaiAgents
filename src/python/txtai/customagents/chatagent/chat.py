@@ -11,9 +11,8 @@ class ConversationalAgent(BaseAgent):
         self.initial_message ="Hello! I am your medical assistant. How can I help you today?"
 
     def get_initial_message(self):
-
         return self.initial_message
-
+    
     def reset(self):
         self.conversation_history = ""
 
